@@ -1,46 +1,44 @@
 import java.net.*;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.security.DigestException;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.util.Base64;
 import java.io.*;
-public class TCPServer
-{
-public static void main(String[] args)
-{
-ServerSocket serverSocket;
-try
-{
-serverSocket = new ServerSocket(9999); //creates a socket and
-binds it to port 9999
-//serverSocket = new ServerSocket(0); //creates a socket and
-binds it to next available port
-while (true)
-{
-System.out.println("TCP Server waiting for client on
-port " + serverSocket.getLocalPort() + "...");
-Socket connectionSocket = serverSocket.accept();
-//listens for connection and
-// creates a connection socket for communication
-System.out.println("Just connected server port # " +
-connectionSocket.getLocalSocketAddress() + " to client port # " +
-connectionSocket.getRemoteSocketAddress());
-DataInputStream in = new
-DataInputStream(connectionSocket.getInputStream()); //get incoming data in bytes
-from connection socket
-String outText = in.readUTF();
-System.out.println("RECEIVED: from IPAddress " +
-connectionSocket.getInetAddress() + " and
-from port " + connectionSocket.getPort() + " the data: " + outText);
-outText = outText.toUpperCase();
-DataOutputStream out = new
-DataOutputStream(connectionSocket.getOutputStream()); //setup a stream for outgoing
-bytes of data
-out.writeUTF(outText);
-connectionSocket.close(); //close connection socket
-after this exchange
-System.out.println();
-}
-}
-catch (IOException e)
-{
-e.printStackTrace();
-}
-}
+
+public class TCPServer {
+    public static void main(String[] args) throws NoSuchAlgorithmException {
+
+        ServerSocket serverSocket;
+        try {
+            serverSocket = new ServerSocket(9999); // Creates a socket and binds it to port 9999
+            // serverSocket = new ServerSocket(0); // Creates a socket and binds it to next available port
+            while (true) {
+                System.out.println("Waiting for client on port " + serverSocket.getLocalPort() + "...");
+                Socket connectionSocket = serverSocket.accept(); // Listens for connection and creates a connection socket for communication
+                System.out.println("Just connected server port # " + connectionSocket.getLocalSocketAddress() +
+                        " to client port # " + connectionSocket.getRemoteSocketAddress());
+
+                DataInputStream in = new DataInputStream(connectionSocket.getInputStream()); // Get incoming data in bytes from connection socket
+                int fileSize = in.readInt();
+                byte[] fileBytes = new byte[fileSize];
+                in.readFully(fileBytes);
+
+                MessageDigest digest = MessageDigest.getInstance("SHA-256");
+                byte[] serverHash = digest.digest(fileBytes);
+                String hashString = Base64.getEncoder().encodeToString(serverHash);
+
+                System.out.println("Received file size in bits = " + (fileSize * 8));
+                System.out.println("Received file SHA256 hash: " + serverHash);
+
+                DataOutputStream out = new DataOutputStream(connectionSocket.getOutputStream()); // Setup a stream for outgoing bytes of data
+                out.writeUTF(hashString);
+
+                connectionSocket.close(); // Close connection socket after this exchange
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 }
