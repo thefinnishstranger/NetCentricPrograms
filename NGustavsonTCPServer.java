@@ -4,7 +4,7 @@ import java.security.NoSuchAlgorithmException;
 import java.util.Base64;
 import java.io.*;
 
-public class TCPServer {
+public class NGustavsonTCPServer {
     public static void main(String[] args) throws NoSuchAlgorithmException {
 
         ServerSocket serverSocket;
