@@ -30,7 +30,7 @@ public class TCPServer {
                 String hashString = Base64.getEncoder().encodeToString(serverHash);
 
                 System.out.println("Received file size in bits = " + (fileSize * 8));
-                System.out.println("Received file SHA256 hash: " + serverHash);
+                System.out.println("Received file SHA256 hash: " + hashString);
 
                 DataOutputStream out = new DataOutputStream(connectionSocket.getOutputStream()); // Setup a stream for outgoing bytes of data
                 out.writeUTF(hashString);
