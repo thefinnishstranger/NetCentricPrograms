@@ -1,7 +1,4 @@
 import java.net.*;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.security.DigestException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Base64;
